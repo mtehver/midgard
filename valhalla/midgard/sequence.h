@@ -398,25 +398,21 @@ struct tar {
     }
   };
 
-  tar(const std::string& tar_file, bool regular_files_only = true):tar_file(tar_file) {
+  tar(const std::string& tar_file, bool regular_files_only = true):tar_file(tar_file),skipped_blocks(0) {
     //map the file
     struct stat s;
     if(stat(tar_file.c_str(), &s) || s.st_size == 0 || (s.st_size % sizeof(header_t)) != 0)
       return;
     try { mm.map(tar_file, s.st_size); } catch (...) { return; }
-    //most tars end with 2 blocks of binary zeros
-    static constexpr header_t END_OF_ARCHIVE[2] = {{}, {}};
-    size_t eoa_size = memcmp(mm.get() + mm.size() - 2 * sizeof(header_t), &END_OF_ARCHIVE, 2 * sizeof(header_t)) ? 0 : 2 * sizeof(header_t);
-    //fill out the contents
+    //rip through the tar to see whats in it noting that most tars end with 2 empty blocks
+    //but we can concatinate tars and get them in between so we'll just be pretty lax about it
     const char* position = mm.get();
-    while(position < mm.get() + mm.size() - eoa_size) {
+    while(position < mm.get() + mm.size()) {
       //get the header for this file
       const header_t* h = static_cast<const header_t*>(static_cast<const void*>(position));
-      if(!h->verify()) {
-        mm.unmap();
-        return;
-      }
       position += sizeof(header_t);
+      //if it doesnt checkout ignore it and move on one block at a time
+      if(!h->verify()) { ++skipped_blocks; continue; }
       auto size = h->get_file_size();
       //do we record entry file or not
       if(!regular_files_only || (h->typeflag == '0' || h->typeflag == '\0'))
@@ -432,6 +428,7 @@ struct tar {
   using entry_name_t = std::string;
   using entry_location_t = std::pair<const char*, size_t>;
   std::unordered_map<entry_name_t, entry_location_t> contents;
+  size_t skipped_blocks;
 };
 
 }

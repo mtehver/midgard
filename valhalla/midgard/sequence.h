@@ -157,19 +157,6 @@ class sequence {
       flush();
   }
 
-  //search for an object using binary search O(logn)
-  //assumes the file was written in sorted order
-  //the predicate should be something like a less than or greater than check
-  bool find(T& target, const std::function<bool (const T&, const T&)>& predicate) {
-    flush();
-    //if no elements we are done
-    if(memmap.size() == 0)
-      return false;
-    T original = target;
-    target = *std::lower_bound(static_cast<const T*>(memmap), static_cast<const T*>(memmap) + memmap.size(), original, predicate);
-    return !(predicate(original, target) || predicate(target, original));
-  }
-
   //finds the first matching object by scanning O(n)
   //assumes nothing about the order of the file
   //the predicate should be something like an equality check
@@ -319,6 +306,22 @@ class sequence {
     size_t index;
   };
 
+  //search for an object using binary search O(logn)
+  //assumes the file was written in sorted order
+  //the predicate should be something like a less than or greater than check
+  iterator find(const T& target, const std::function<bool (const T&, const T&)>& predicate) {
+    flush();
+    //if no elements we are done
+    if(memmap.size() == 0)
+      return end();
+    //if we did find it return the iterator to it
+    auto* found = std::lower_bound(static_cast<const T*>(memmap), static_cast<const T*>(memmap) + memmap.size(), target, predicate);
+    if(!(predicate(target, *found) || predicate(*found, target)))
+      return at(found - static_cast<const T*>(memmap));
+    //we didnt find it
+    return end();
+  }
+
   iterator at(size_t index) {
     //dump to file and make an element
     flush();
@@ -371,7 +374,7 @@ struct tar {
       uint64_t sum = 0;
       uint64_t multiplier = 1;
       //Skip everything after the last NUL/space character
-      //In some TAR archives the size field has non-trailing NULs/spaces, so this is neccessary
+      //In some TAR archives the size field has non-trailing NULs/spaces, so this is necessary
       const unsigned char* check = ptr; //This is used to check where the last NUL/space char is
       for (; check >= (unsigned char*) data; check--)
         if ((*check) == 0 || (*check) == ' ')

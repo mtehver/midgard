@@ -1,5 +1,6 @@
 #include "test.h"
 #include "midgard/util.h"
+#include "midgard/encoded.h"
 #include "midgard/distanceapproximator.h"
 #include "midgard/constants.h"
 
@@ -121,7 +122,7 @@ void TestResample() {
     }) {
 
     //try it
-    auto input_shape = decode<std::vector<PointLL>>(example.second);
+    auto input_shape = decode<std::vector<PointLL>>(example.second.c_str(), example.second.length());
     auto resampled = resample_spherical_polyline(input_shape, example.first, false);
 
     //check that nothing is too far apart

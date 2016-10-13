@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 AM_LDFLAGS = @COVERAGE_LDFLAGS@
-AM_CPPFLAGS = -Ivalhalla
-AM_CXXFLAGS = -Ivalhalla @COVERAGE_CXXFLAGS@ 
+AM_CPPFLAGS = -I@abs_srcdir@/valhalla
+AM_CXXFLAGS = -I@abs_srcdir@/valhalla @COVERAGE_CXXFLAGS@
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
@@ -54,6 +54,8 @@ nobase_include_HEADERS = \
 	valhalla/midgard/distanceapproximator.h \
 	valhalla/midgard/ellipse.h \
 	valhalla/midgard/sequence.h \
+	valhalla/midgard/shape_decoder.h \
+	valhalla/midgard/encoded.h \
 	valhalla/midgard/logging.h
 libvalhalla_midgard_la_SOURCES = \
 	src/midgard/linesegment2.cc \

@@ -7,11 +7,13 @@
 #include <cmath>
 #include <list>
 
-namespace {
-const float INVALID = 0xBADBADBAD;
+#include <boost/math/constants/constants.hpp>
 
-constexpr double RAD_PER_DEG = M_PI / 180.0;
-constexpr double DEG_PER_RAD = 180.0 / M_PI;
+namespace {
+constexpr float INVALID = 0xBADBADBAD;
+
+constexpr double RAD_PER_DEG = boost::math::constants::pi<double>() / 180.0;
+constexpr double DEG_PER_RAD = 180.0 / boost::math::constants::pi<double>();
 }
 
 namespace valhalla {

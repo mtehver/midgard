@@ -4,6 +4,7 @@
 #include "valhalla/midgard/distanceapproximator.h"
 
 #include <cstdint>
+#include <cctype>
 #include <cmath>
 #include <stdlib.h>
 #include <sstream>
@@ -13,13 +14,15 @@
 #include <list>
 #include <sys/stat.h>
 
+#include <boost/math/constants/constants.hpp>
+
 namespace {
 
 constexpr double POLYLINE_PRECISION = 1E6;
 constexpr double INV_POLYLINE_PRECISION = 1.0 / POLYLINE_PRECISION;
 constexpr double RAD_PER_METER  = 1.0 / 6378160.187;
-constexpr double RAD_PER_DEG = M_PI / 180.0;
-constexpr double DEG_PER_RAD = 180.0 / M_PI;
+constexpr double RAD_PER_DEG = boost::math::constants::pi<double>() / 180.0;
+constexpr double DEG_PER_RAD = 180.0 / boost::math::constants::pi<double>();
 
 }
 

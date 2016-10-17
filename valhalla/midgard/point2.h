@@ -24,7 +24,9 @@ class Point2 : public std::pair<float, float>{
   /**
    * Use the constructors provided by pair
    */
-  using std::pair<float, float>::pair;
+  Point2() = default;
+  Point2(const std::pair<float, float>& p) : pair(p) { }
+  Point2(float x, float y) : pair(x, y) { }
 
   /**
    * Destructor

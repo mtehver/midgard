@@ -8,7 +8,7 @@
 #include <list>
 
 namespace {
-const float INVALID = 0xBADBADBAD;
+constexpr float INVALID = 0xBADBADBAD;
 
 constexpr double RAD_PER_DEG = M_PI / 180.0;
 constexpr double DEG_PER_RAD = 180.0 / M_PI;
